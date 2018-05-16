@@ -52,16 +52,21 @@ stage1:
 
 ALIGN 4
 dapack:
-            db 0x10     ; size of structure    
-            db 0
+        db 0x10     ; size of structure    
+        db 0
 .blkcnt:
 %include "stage2nsecs.inc"
-.dadd:      dw 0x7e00   ; target address (0:0x7e00)
-            dw 0
-.lba:       dd 1        ; load second sector
-            dd 0
+.dadd:  dw 0x7e00   ; target address (0:0x7e00)
+        dw 0
+.lba:   dd 1        ; load second sector
+        dd 0
 
+    resb 436 - $ - stage1
 
-bootsig:
-    resb 510 - $ - stage1
-    dw 0xAA55
+MBRtab:
+.uid:       db ":ThanatOS:" ; Must be exactly 10 bytes
+.pt1:       times 16 db 0x0
+.pt2:       times 16 db 0x0
+.pt3:       times 16 db 0x0
+.pt4:       times 16 db 0x0
+.bootsig:   dw 0xAA55 
