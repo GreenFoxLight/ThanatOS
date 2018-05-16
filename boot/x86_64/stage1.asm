@@ -1,3 +1,12 @@
+;;; *************************************
+;;; Stage1 bootloader
+;;; Responsible for loading stage2
+;;;
+;;; Needs Int 13h extensions to work.
+;;; Displays E if Int13h extensions
+;;;  are not available
+;;; And D if reading stage2 did not work.
+;;; *************************************
 BITS 16
 ORG 0x7c00
     ; The Stage1 bootloader loads sector 2 upwards and jumps
@@ -45,7 +54,8 @@ ALIGN 4
 dapack:
             db 0x10     ; size of structure    
             db 0
-.blkcnt:    dw 1 
+.blkcnt:
+%include "stage2nsecs.inc"
 .dadd:      dw 0x7e00   ; target address (0:0x7e00)
             dw 0
 .lba:       dd 1        ; load second sector
