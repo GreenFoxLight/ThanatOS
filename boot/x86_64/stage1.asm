@@ -13,6 +13,7 @@ ORG 0x7c00
     ; to stage2
 stage1:
     cli
+    mov [boot_drive], dl
     ; set ds, es
     xor ax, ax
     mov ds, ax
@@ -25,7 +26,7 @@ stage1:
     ; Check if the BIOS supports LBA Addressing
     mov ah, 0x41
     mov bx, 0x55aa
-    mov dl, 0x80
+    mov dl, [boot_drive] 
     int 0x13
     jnc .loadstage2 ; CF if not supported
     mov ah, 0x0e
@@ -50,6 +51,8 @@ stage1:
 .gotostage2:
     jmp 0x0000:0x7e00
 
+boot_drive: db 0
+
 ALIGN 4
 dapack:
         db 0x10     ; size of structure    
@@ -61,7 +64,7 @@ dapack:
 .lba:   dd 1        ; load second sector
         dd 0
 
-    resb 436 - $ - stage1
+resb 436 - $ - stage1
 
 MBRtab:
 .uid:       db ":ThanatOS:" ; Must be exactly 10 bytes

@@ -10,6 +10,5 @@ stage2nsecs.inc: stage2.bin
 stage2.bin: stage2.asm
 	nasm -f bin -o $@ $^
 
-
 clean:
 	rm -f stage2nsecs.inc stage1.bin stage2.bin x86_64-boot.bin
