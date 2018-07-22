@@ -22,12 +22,11 @@ stage2_entry:
     jmp stage2_main
 
 stage2_main:
-    mov si, gathermmapmsg 
-    call puts
-
     ; Gather memory map
     ; Put this at 0x0600; its unlikely that it will
     ; grow to hit our stack
+    mov si, gathermmapmsg 
+    call puts
     mov di, 0x0600
     call gather_mmap
     cmp ax, 0
@@ -40,10 +39,32 @@ stage2_main:
     mov si, okmsg
     call puts
 
+    ; Check if the a20 line is enabled
+    mov si, checka20msg 
+    call puts
+    call check_a20
+    cmp ax, 0
+    je .a20_enabled
+    ; Enable the a20 line
+    mov si, failedmsg
+    call puts
+    mov si, enablea20msg
+    call puts
+    call enable_a20
+    cmp ax, 0
+    je .a20_enabled
+    mov si, failedmsg
+    call puts
+    jmp .lHang
+.a20_enabled:
+    mov si, okmsg
+    call puts
+    
 .lHang:
     jmp .lHang
 
 %include "mmap.asm"
+%include "a20.asm"
 
 ; Params: 
 ;   si: Pointer to zero terminated string
@@ -66,3 +87,7 @@ failedmsg:
     db 'Failed', 13, 10, 0
 okmsg:
     db 'Ok', 13, 10, 0
+checka20msg:
+    db 'Check if the a20 line is enabled... ', 0
+enablea20msg:
+    db 'Enabling a20 line... ', 0
